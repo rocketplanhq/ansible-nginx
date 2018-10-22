@@ -3,6 +3,7 @@ dependencies: []
 
 galaxy_info:
   author: Rocketplan
+  description: "Pure NGiNX role"
   company: "Rocketplan, LLC"
   license: "MIT"
 
