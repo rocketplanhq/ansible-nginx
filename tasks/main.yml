@@ -1,0 +1,30 @@
+- name: 'install'
+  apt:
+    name: "nginx{% if nginx_version %}={{ nginx_version }}{% endif %}"
+
+- name: 'update nginx.conf'
+  template:
+    src: 'templates/nginx/{{ nginx_conf }}'
+    dest: '/etc/nginx/nginx.conf'
+  when: 'nginx_conf|d("", true) != ""'
+  notify: 'nginx: restart'
+
+- name: 'update conf.d'
+  template:
+    src: 'templates/nginx/conf.d/{{ item }}'
+    dest: '/etc/nginx/conf.d/{{ item }}'
+  with_items: "{{ nginx_conf_d }}"
+  notify: 'nginx: restart'
+
+- name: 'configure ssl'
+  no_log: true
+  copy:
+    dest: '/etc/nginx/{{ item.name }}'
+    content: '{{ item.content }}'
+  when: nginx_ssl
+  notify: 'nginx: restart'
+  with_items:
+    - name: 'ssl_cert.crt'
+      content: '{{ nginx_ssl_cert }}'
+    - name: 'ssl_cert.key'
+      content: '{{ nginx_ssl_cert_key }}'
